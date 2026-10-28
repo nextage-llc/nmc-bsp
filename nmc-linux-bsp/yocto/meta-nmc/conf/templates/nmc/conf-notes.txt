@@ -1,0 +1,6 @@
+NMC2v3 build (Microchip's PolarFire SoC BSP + meta-nmc).
+
+Build the NMC images with:
+    bitbake mchp-base-image
+
+Outputs: tmp-glibc/deploy/images/mpfs-icicle-kit/ (payload.bin, mchp-base-image-*.wic.gz)

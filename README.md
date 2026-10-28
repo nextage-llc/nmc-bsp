@@ -1,134 +1,63 @@
-# MPFS NMC OS Boot Workspace (`MPFS_NMC_OS`)
+# NMC2v3 Board Support Package (`nmc-bsp`)
 
-This repository contains the bootloader, Board Support Packages (BSPs), and tools for booting an operating system on the Microchip PolarFire SoC (MPFS) NMC platform.
-
-The NMC board supports two boot targets — **RTEMS** and **Linux**. Each target has its own BSP with a complete, standalone set of instructions.
-
----
+Everything to bring up the Nextage **NMC2v3** (Microchip PolarFire SoC MPFS250T) and build your own software for it: the FPGA reference design, the HSS bootloader, Linux (Buildroot and Yocto) and RTEMS. Use it as-is (our `.job` and pre-built images from the [release downloads](https://github.com/nextage-llc/nmc-bsp/releases)) or customize any part. Releases are named by date (e.g. `2026.10`); versions and changes are in the [CHANGELOG](./CHANGELOG.md).
 
 ## Start Here
 
-| I want to...                                      | Go to                                                                  |
-| ------------------------------------------------- | ---------------------------------------------------------------------- |
-| Build and boot **Linux** on the NMC board         | [`mpfs-nmc-linux-bsp/README.md`](./mpfs-nmc-linux-bsp/README.md)       |
-| Build and boot **RTEMS** on the NMC board         | [`mpfs-nmc-rtems-bsp/README.md`](./mpfs-nmc-rtems-bsp/README.md)       |
-| Rebuild the HSS bootloader or BSP tools           | [Maintainer Guide](#maintainer-guide) (below)                          |
+| Step | What | Go to |
+| ---- | ---- | ----- |
+| 1 | Program the FPGA design and HSS bootloader (once per board) | [`fpga/README.md`](./fpga/README.md) |
+| 2 | Boot **Linux** (Buildroot or Yocto) | [`nmc-linux-bsp/README.md`](./nmc-linux-bsp/README.md) |
+| 2 | Boot **RTEMS** | [`nmc-rtems-bsp/README.md`](./nmc-rtems-bsp/README.md) |
+| — | Connector pins → Linux devices | [`BOARD_INTERFACES.md`](./BOARD_INTERFACES.md) |
 
----
+**You need:** a Windows PC with WSL2 (Debian 13 is what this BSP is tested on; Ubuntu 22.04/24.04 should also work, not tested for this release), Libero SoC 2025.2 (for FlashPro Express) and a FlashPro5/6 programmer, Tera Term, USB-to-serial cables for UART0 and UART1, and for Linux a TFTP server (e.g. tftpd64) and an Ethernet cable.
 
 ## How the Board Boots
 
-Both boot targets share the same first-stage bootloader:
-
 ```text
-eNVM:  Hart Software Services (HSS)
-         │
-         ▼  loads payload.bin from eMMC
-eMMC:  payload.bin
-         ├── RTEMS:  RTEMS application
-         └── Linux:  U-Boot ──► Linux kernel + rootfs (sdcard.img or yocto.wic.gz)
+eNVM:  HSS bootloader                  ← programmed with nmc2v3.job (fpga/)
+         │  loads the payload from eMMC
+eMMC:  payload
+         ├── RTEMS: the RTEMS application                    (payload-rtems.bin)
+         └── Linux: U-Boot ──► kernel + rootfs on the eMMC   (payload-buildroot.bin + nmc2v3-buildroot.img,
+                                                              or payload-yocto.bin + nmc2v3-yocto.wic.gz)
 ```
 
-The HSS is common to both targets — choosing RTEMS or Linux comes down to which `payload.bin` (and, for Linux, the disk image) is flashed to eMMC.
-
----
+RTEMS or Linux is just a matter of which payload (and, for Linux, which disk image) is on the eMMC.
 
 ## Directory Structure
 
 ```text
-MPFS_NMC_OS/
-├── docs/                       # Supplementary documentation (NMC Bring-Up Guide)
-├── hart-software-services/     # Microchip HSS source code repository
-├── mpfs-nmc-rtems-bsp/         # Distributed RTEMS Board Support Package
-└── mpfs-nmc-linux-bsp/         # Distributed Linux (Buildroot + Yocto) Board Support Package
+nmc-bsp/
+├── README.md, CHANGELOG.md, BOARD_INTERFACES.md
+├── fpga/                     # Program the board; MSS configuration; customizing the FPGA design
+├── hart-software-services/   # HSS bootloader source (Microchip HSS + NMC2v3 board, see UPSTREAM.md)
+├── nmc-linux-bsp/            # Linux: Buildroot and Yocto
+├── nmc-rtems-bsp/            # RTEMS: device tree and sample application
+└── docs/                     # Bring-up guides (PDF)
 ```
 
----
+## Rebuild the HSS
 
-## Additional Resources
+Only needed if you change the HSS — the release `.job` already contains it. The HSS is Microchip's [Hart Software Services](https://github.com/polarfire-soc/hart-software-services) v2026.04.1 plus the NMC2v3 board; every NMC change is listed in [`UPSTREAM.md`](./hart-software-services/UPSTREAM.md). It builds on Windows:
 
-- [**NMC2v3 Bring-Up Guide (Buildroot)**](./docs/NMC2v3_Bring-Up_Guide_Rev8_Buildroot.pdf) and [**NMC2v3 Bring-Up Guide (Yocto)**](./docs/NMC2v3_Bring-Up_Guide_Rev16_Yocto.pdf) (PDF) — photo walkthroughs of taking a bare NMC board to a Linux prompt: software installation, cabling and connector locations, FPGA/eNVM programming, and Linux flashing.
+1. Install the [xPack GNU RISC-V Embedded GCC](https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases) 15.2.0 (e.g. to `C:\Microchip\xpack-riscv-none-elf-gcc-15.2.0-1`), SoftConsole (for its `build_tools`), and Python 3.
+2. Keep this repository at a **short path** such as `C:\nmc-bsp` — the build creates deep paths and fails past Windows' path-length limit.
+3. In PowerShell:
 
----
-
-## Maintainer Guide
-
-The sections below cover recompiling the HSS bootloader and the tools distributed in the BSPs. They are not needed to boot the board with the provided BSP artifacts.
-
-### 1. Environment Requirements
-
-Ensure the xPack GNU RISC-V Embedded GCC toolchain (v15.2.0 or compatible) is installed and available in your system path:
-
-```bash
-export PATH=$PATH:/path/to/xpack-riscv-none-elf-gcc/bin
-riscv-none-elf-gcc --version
-```
-
-Install host build tools:
-
-```bash
-sudo apt update && sudo apt install -y build-essential device-tree-compiler libyaml-dev libelf-dev libssl-dev
-```
-
-> The Linux boot path (`mpfs-nmc-linux-bsp`) has its own, separate environment requirements (WSL2/Ubuntu 22.04 + Buildroot or Yocto dependencies) — see that repo's README rather than this section.
-
-### 2. Compiling the HSS Bootloader
-
-To compile the Hart Software Services eNVM wrapper binary (`hss-envm-wrapper-bm1-p0.bin`):
-
-1. Navigate to the HSS repository root:
-
-   ```bash
-   cd MPFS_NMC_OS/hart-software-services
-   ```
-
-2. Launch the interactive command-line Kconfig generator to configure target board options (example: NMC2v3):
-
-   ```bash
-   make BOARD=NMC2v3 config
-   ```
-
-3. Clean the board target:
-
-   ```bash
-   make BOARD=NMC2v3 clean
-   ```
-
-4. Compile the eNVM wrapper binary using the xPack GCC toolchain:
-
-   ```bash
+   ```powershell
+   $env:PATH = "C:\Microchip\xpack-riscv-none-elf-gcc-15.2.0-1\bin;C:\Microchip\SoftConsole-v2022.2-RISC-V-747\build_tools\bin;" + $env:PATH
+   cd C:\nmc-bsp\hart-software-services
    make BOARD=NMC2v3
    ```
 
-### 3. Building the Payload Generator Tool (`hss-payload-generator`)
+   The first build creates `.config` from `boards/NMC2v3/def_config`. To change options, run `make BOARD=NMC2v3 menuconfig` (needs Python with `windows-curses`).
 
-To build or update the standalone host binary generator stored in `mpfs-nmc-rtems-bsp/tools/`:
+4. The eNVM image is `build/bootmode1/hss-envm-wrapper-bm1-p0.hex` — put it into the `.job` as in [`fpga/README.md`](./fpga/README.md#put-a-rebuilt-hss-into-the-job).
 
-1. Navigate to the payload generator tool directory:
+The HSS payload generator (`hart-software-services/tools/hss-payload-generator`) is built on Linux: Buildroot and Yocto build their own, and the RTEMS README shows how.
 
-   ```bash
-   cd MPFS_NMC_OS/hart-software-services/tools/hss-payload-generator
-   ```
+## Additional Resources
 
-2. Compile the tool using the host C toolchain:
-
-   ```bash
-   make clean && make
-   ```
-
-3. Copy the compiled executable into the BSP tools folder for distribution:
-
-   ```bash
-   cp hss-payload-generator ../../../mpfs-nmc-rtems-bsp/tools/
-   ```
-
-### 4. Per-OS Artifacts
-
-- **RTEMS** — If the device tree source (`.dts`) is modified, recompile the board `.dtb`:
-
-  ```bash
-  cd MPFS_NMC_OS/mpfs-nmc-rtems-bsp
-  dtc -I dts -O dtb -o dts/mpfs-nmc-board.dtb dts/mpfs-nmc-uboot.dts
-  ```
-
-- **Linux** — Built entirely differently, with either Buildroot ([`buildroot-external-microchip`](https://github.com/linux4microchip/buildroot-external-microchip)) or Yocto ([`meta-mchp`](https://github.com/linux4microchip/meta-mchp)), run inside WSL2/Ubuntu 22.04 rather than the xPack toolchain and HSS repo used above. For environment setup, applying the NMC device trees/config, building images, and flashing, see [`mpfs-nmc-linux-bsp/README.md`](./mpfs-nmc-linux-bsp/README.md).
+- [**Bring-Up Guide (Buildroot)**](./docs/nmc2v3-bring-up-guide-buildroot.pdf) and [**Bring-Up Guide (Yocto)**](./docs/nmc2v3-bring-up-guide-yocto.pdf) (PDF) — photo walkthroughs: software installation, cabling and connector locations, FPGA/eNVM programming, and flashing.

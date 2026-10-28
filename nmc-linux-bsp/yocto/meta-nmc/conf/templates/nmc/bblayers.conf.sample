@@ -1,0 +1,22 @@
+# NMC2v3: Microchip's PolarFire SoC template (meta-mchp-polarfire-soc-bsp/conf/templates/default)
+# plus the meta-nmc layer. Expects the nmc-bsp repo cloned at <workspace>/nmc-bsp.
+
+# LAYER_CONF_VERSION is increased each time build/conf/bblayers.conf
+# changes incompatibly
+LCONF_VERSION = "7"
+
+BBPATH = "${TOPDIR}"
+BBFILES ?= ""
+
+BBLAYERS ?= " \
+  ##OEROOT##/meta \
+  ##OEROOT##/../meta-openembedded/meta-oe \
+  ##OEROOT##/../meta-openembedded/meta-python \
+  ##OEROOT##/../meta-openembedded/meta-multimedia \
+  ##OEROOT##/../meta-openembedded/meta-networking \
+  ##OEROOT##/../meta-mchp/meta-mchp-common/ \
+  ##OEROOT##/../meta-mchp/meta-mchp-distro \
+  ##OEROOT##/../meta-mchp/meta-mchp-polarfire-soc/meta-mchp-polarfire-soc-bsp \
+  ##OEROOT##/../meta-mchp/meta-mchp-polarfire-soc/meta-mchp-polarfire-soc-community \
+  ##OEROOT##/../nmc-bsp/nmc-linux-bsp/yocto/meta-nmc \
+  "

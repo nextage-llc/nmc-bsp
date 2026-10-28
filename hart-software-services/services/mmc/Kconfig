@@ -56,6 +56,29 @@ config SERVICE_MMC_BUS_VOLTAGE_3V3
 		If you do not know what to do here, say Y.
 endmenu
 
+menu "eMMC Bus"
+
+config SERVICE_MMC_BUS_WIDTH_4BIT
+	bool "Use 4-bit eMMC data bus"
+	default n
+        depends on SERVICE_MMC_MODE_EMMC
+	help
+                This feature sets the eMMC data bus width to 4 bits instead of 8 bits,
+                for boards that only route DAT0-DAT3 to the eMMC device.
+
+		If you do not know what to do here, say N.
+
+config SERVICE_MMC_3V3_DDR
+	bool "Use eMMC High Speed DDR at 3.3V"
+	default n
+        depends on SERVICE_MMC_MODE_EMMC && SERVICE_MMC_BUS_VOLTAGE_3V3
+	help
+                This feature sets the eMMC bus speed mode to High Speed DDR (52 MHz,
+                dual data rate) instead of SDR when using a 3.3V bus voltage.
+
+		If you do not know what to do here, say N.
+endmenu
+
 choice "MMC Speed"
 	prompt "SD/eMMC Bus Speed"
 	default SERVICE_MMC_HIGH_SPEED

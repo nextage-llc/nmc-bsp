@@ -1,0 +1,309 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/* Written by Ryan Nguyen | Andrew Carton 8/12/26 */
+/* Modified by Zein Sebraoui 8/22/26 */
+
+/dts-v1/;
+
+#include "mpfs.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+
+/ {
+	model = "Microchip PolarFire-SoC NMC Board";
+	compatible = "microchip,mpfs-custom-mss", "microchip,mpfs";
+
+	aliases {
+		ethernet0 = &mac0;
+		ethernet1 = &mac1;
+		serial0 = &mmuart0;
+		serial1 = &mmuart1;
+		serial2 = &mmuart2;
+		serial3 = &mmuart4;		/* MMUART_4 RS-422 on J5 -> ttyS3 */
+		serial4 = &uart_fpga_422_1;	/* fabric Core16550, J12 pins 6-9 -> ttyS4 */
+		serial5 = &uart_fpga_422_2;	/* fabric Core16550, J5 E34-E38 -> ttyS5 */
+		serial6 = &uart_j1;		/* fabric Core16550, J1 3.3 V TTL -> ttyS6 */
+		i2c1 = &i2c1;
+		can0 = &can0;			/* CAN_0 (via fabric), J12 pins 14/15 */
+		can1 = &can1;			/* CAN_1 (MSS I/O), J12 pins 11/12 */
+		mmc0 = &mmc;
+		spi0 = &spi0;
+	};
+
+	chosen {
+		/* Console on MMUART1 (ttyS1, Window 2). Bare earlycon follows stdout-path. */
+		bootargs = "console=ttyS1,115200n8 earlycon root=/dev/mmcblk0p3 rootwait rw";
+		stdout-path = "serial1:115200n8";
+	};
+
+	/* Required base reference clock for CCC / Clocks */
+	refclk_ccc: cccrefclk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <50000000>;
+	};
+
+	/* Fabric APB clock for the FIC3 peripherals (PF_CCC_C0 OUT3, 50 MHz) */
+	fabric_clk3: fabric-clk3 {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <50000000>;
+	};
+
+	/* Match the 768 MB range configured in Libero */
+	ddrc_cache_lo: memory@80000000 {
+		device_type = "memory";
+		reg = <0x0 0x80000000 0x0 0x30000000>;
+		status = "okay";
+	};
+
+	/* Disable 16GB High Cached region */
+	ddrc_cache_hi: memory@1000000000 {
+		status = "disabled";
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		/* HSS payload reservation at top of 768MB region (0xAF800000) */
+		hss_payload: region@af800000 {
+			reg = <0x0 0xaf800000 0x0 0x800000>;
+			no-map;
+		};
+	};
+};
+
+&{/soc} {
+    pcie0: pcie@e0000000 {
+        compatible = "microchip,pcie-host-1.0";
+        reg = <0x0 0xe0000000 0x0 0x01000000>,   /* ECAM cfg, 16MB (buses 0-15) via FIC1 */
+              <0x0 0x43004000 0x0 0x00002000>,   /* PCIe CTRL 0 bridge regs via FIC3 */
+              <0x0 0x43006000 0x0 0x00002000>;   /* PCIe CTRL 0 ctrl regs via FIC3 */
+        reg-names = "cfg", "bridge", "ctrl";
+        bus-range = <0x0 0x0f>;
+
+        #address-cells = <3>;
+        #size-cells = <2>;
+        device_type = "pci";
+
+        clocks = <&clkcfg 28>, <&clkcfg 30>;     /* CLK_FIC1, CLK_FIC3 */
+        clock-names = "fic1", "fic3";
+
+        /* 112MB non-prefetchable MEM window, after the cfg space */
+        ranges = <0x02000000 0x0 0xe1000000 0x0 0xe1000000 0x0 0x07000000>;
+        dma-ranges = <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x40000000>;
+
+        #interrupt-cells = <1>;
+        interrupt-parent = <&plic>;
+        interrupts = <119>;                       /* MSS_INT_F2M[1] */
+        interrupt-map-mask = <0x0 0x0 0x0 0x7>;
+        interrupt-map = <0 0 0 1 &pcie_intc0 0>,
+                        <0 0 0 2 &pcie_intc0 1>,
+                        <0 0 0 3 &pcie_intc0 2>,
+                        <0 0 0 4 &pcie_intc0 3>;
+
+        msi-parent = <&pcie0>;
+        msi-controller;
+        /* Disabled by default: the root port needs the NMC reference design and an SSD.
+         * Set to "okay" to use it. */
+        status = "disabled";
+
+        pcie_intc0: interrupt-controller {
+            #address-cells = <0>;
+            #interrupt-cells = <1>;
+            interrupt-controller;
+        };
+    };
+
+    /* Fabric RS-422 UARTs (Core16550) on FIC3 APB, 50 MHz PCLK, MSS_INT_F2M[2]/[3] */
+    uart_fpga_422_1: serial@51000000 {
+        compatible = "ns16550a";
+        reg = <0x0 0x51000000 0x0 0x1000>;
+        reg-shift = <2>;
+        reg-io-width = <4>;
+        clock-frequency = <50000000>;
+        interrupt-parent = <&plic>;
+        interrupts = <120>;
+        status = "okay";
+    };
+
+    uart_fpga_422_2: serial@52000000 {
+        compatible = "ns16550a";
+        reg = <0x0 0x52000000 0x0 0x1000>;
+        reg-shift = <2>;
+        reg-io-width = <4>;
+        clock-frequency = <50000000>;
+        interrupt-parent = <&plic>;
+        interrupts = <121>;
+        status = "okay";
+    };
+
+    /* J1 3.3 V TTL UART (Core16550), MSS_INT_F2M[4] */
+    uart_j1: serial@53000000 {
+        compatible = "ns16550a";
+        reg = <0x0 0x53000000 0x0 0x1000>;
+        reg-shift = <2>;
+        reg-io-width = <4>;
+        clock-frequency = <50000000>;
+        interrupt-parent = <&plic>;
+        interrupts = <122>;
+        status = "okay";
+    };
+
+    /* User GPIO (CoreGPIO): SW2 button (in, active low, MSS_INT_F2M[5]),
+     * RGB LED (out, active low: 0 = on). Plain GPIO lines, no fixed behaviour. */
+    gpio_user: gpio@54000000 {
+        compatible = "microchip,coregpio-rtl-v3";
+        reg = <0x0 0x54000000 0x0 0x1000>;
+        clocks = <&fabric_clk3>;
+        gpio-controller;
+        #gpio-cells = <2>;
+        ngpios = <4>;
+        gpio-line-names = "SW2_N", "LED_R", "LED_G", "LED_B";
+        interrupt-controller;
+        #interrupt-cells = <2>;
+        interrupt-parent = <&plic>;
+        interrupts = <123>;
+        status = "okay";
+    };
+};
+
+/* Core SoC Reference Clocks */
+&refclk { 
+	clock-frequency = <125000000>; 
+};
+
+&ccc_nw {
+	clocks = <&refclk_ccc>, <&refclk_ccc>, <&refclk_ccc>, <&refclk_ccc>,
+		 <&refclk_ccc>, <&refclk_ccc>;
+	clock-names = "pll0_ref0", "pll0_ref1", "pll1_ref0", "pll1_ref1",
+		      "dll0_ref", "dll1_ref";
+	status = "okay";
+};
+
+/* Hardware MSS UART Configuration */
+&mmuart0 { status = "okay"; };
+&mmuart1 { status = "okay"; };     /* Main Console */
+&mmuart2 { status = "okay"; };
+&mmuart3 { status = "disabled"; };
+&mmuart4 { status = "okay"; };
+
+/* eMMC (U2): VCC and VCCQ are both +3V3, so I/O is 3.3 V only.
+ * Fastest in-spec mode at 3.3 V is High-Speed DDR (52 MHz); HS200 needs 1.8 V I/O.
+ * no-1-8-v: the controller advertises 1.8 V modes in its capability register and
+ * Linux would otherwise pick HS200 on its own. */
+&mmc {
+	bus-width = <4>;
+	disable-wp;
+	no-1-8-v;
+	cap-mmc-highspeed;
+	mmc-ddr-3_3v;
+	status = "okay";
+};
+
+&mbox {
+	status = "okay";
+};
+
+&syscontroller {
+	status = "okay";
+};
+
+/* QSPI flash IC1 (Infineon S25HL01GT, 1 Gbit). At 102 MHz the JEDEC ID read
+ * back shifted by one bit (sampled a clock late), so run it at 50 MHz. */
+&qspi {
+	status = "okay";
+	flash@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <50000000>;
+		spi-tx-bus-width = <4>;
+		spi-rx-bus-width = <4>;
+		status = "okay";
+	};
+};
+
+/* MSS GPIO. Green LEDs D18/D16 (GPIO_0_11/12) and D13 (GPIO_1_0) are active low.
+ * Plain GPIO lines, named for userspace (gpioset/gpioget), no fixed behaviour. */
+&gpio0 {
+	gpio-line-names = "", "", "", "", "", "", "", "", "", "", "",
+			  "LED_D18", "LED_D16";
+	status = "okay";
+};
+
+&gpio1 {
+	gpio-line-names = "LED_D13";
+	status = "okay";
+};
+
+&gpio2 { status = "okay"; };
+&i2c0 { status = "disabled"; };
+
+/* I2C1: J12 pins 24/25 and J4 A17/A27, for daughterboard devices (/dev/i2c-1) */
+&i2c1 {
+	status = "okay";
+	clock-frequency = <400000>;
+};
+
+/* CAN_0: routed through the FPGA fabric (needs the NMC reference design) */
+&can0 {
+	status = "okay";
+};
+
+/* CAN_1: MSS I/O */
+&can1 {
+	status = "okay";
+};
+
+/* SPI0 on J12: 18 CS, 19 MISO, 20 MOSI, 21 CLK. Generic userspace access
+ * (/dev/spidev0.0); replace with your device's own node to use its driver. */
+&spi0 {
+	status = "okay";
+
+	spidev@0 {
+		compatible = "rohm,dh2228fv";
+		reg = <0>;
+		spi-max-frequency = <10000000>;
+	};
+};
+
+&spi1 { status = "disabled"; };
+&usb { status = "disabled"; };
+
+/* MAC 0 Shared MDIO and PHY Configuration */
+&mac0 {
+	status = "okay";
+	phy-mode = "sgmii";
+	phy-handle = <&phy0>;
+
+	mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "cdns,macb-mdio"; 
+
+		phy0: ethernet-phy@8 {
+			reg = <8>;
+            compatible = "ethernet-phy-id0007.0660", "ethernet-phy-ieee802.3-c22";
+			/* Native Linux PHY Reset Handling (Replaces GPIO Hog) */
+			reset-gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
+			reset-assert-us = <10000>;
+			reset-deassert-us = <20000>;
+		};
+
+		phy1: ethernet-phy@9 {
+			reg = <9>;
+            compatible = "ethernet-phy-id0007.0660", "ethernet-phy-ieee802.3-c22";
+			/* Native Linux PHY Reset Handling (Replaces GPIO Hog) */
+			reset-gpios = <&gpio2 1 GPIO_ACTIVE_LOW>;
+			reset-assert-us = <10000>;
+			reset-deassert-us = <20000>;
+		};
+	};
+};
+
+/* MAC 1 Data Plane */
+&mac1 {
+	status = "okay";
+	phy-mode = "sgmii";
+	phy-handle = <&phy1>;
+};

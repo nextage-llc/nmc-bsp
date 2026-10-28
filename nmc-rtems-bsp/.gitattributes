@@ -1,0 +1,3 @@
+# These files are used on Linux (Buildroot, BitBake, dtc, hss-payload-generator);
+# CRLF line endings break them. Binary files are detected automatically.
+* text=auto eol=lf

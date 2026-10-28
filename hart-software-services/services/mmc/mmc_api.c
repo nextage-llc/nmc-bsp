@@ -126,7 +126,7 @@ static bool mmc_init_common(mss_mmc_cfg_t *p_mmcConfig)
     }
 
     if (retval != MSS_MMC_INIT_SUCCESS) {
-        mHSS_DEBUG_PRINTF(LOG_ERROR, "MSS_MMC_init() returned unexpected %d\n", retval);
+        //mHSS_DEBUG_PRINTF(LOG_ERROR, "MSS_MMC_init() returned unexpected %d\n", retval);
     } else {
         result = true;
     }
@@ -140,7 +140,11 @@ static bool mmc_init_emmc(void)
     static mss_mmc_cfg_t emmcConfig =
     {
         .card_type = MSS_MMC_CARD_TYPE_MMC,
+#if IS_ENABLED(CONFIG_SERVICE_MMC_BUS_WIDTH_4BIT)
         .data_bus_width = MSS_MMC_DATA_WIDTH_4BIT,
+#else
+        .data_bus_width = MSS_MMC_DATA_WIDTH_8BIT,
+#endif
 #if defined(CONFIG_SERVICE_MMC_BUS_VOLTAGE_1V8)
         .bus_voltage = MSS_MMC_1_8V_BUS_VOLTAGE,
 #ifdef CONFIG_MODULE_M100PFS
@@ -153,7 +157,11 @@ static bool mmc_init_emmc(void)
 #elif defined(CONFIG_SERVICE_MMC_BUS_VOLTAGE_3V3)
         .bus_voltage = MSS_MMC_3_3V_BUS_VOLTAGE,
         .clk_rate = MSS_MMC_CLOCK_50MHZ,
+#if IS_ENABLED(CONFIG_SERVICE_MMC_3V3_DDR)
         .bus_speed_mode = MSS_MMC_MODE_DDR,
+#else
+        .bus_speed_mode = MSS_MMC_MODE_SDR,
+#endif
 #endif
     };
 
