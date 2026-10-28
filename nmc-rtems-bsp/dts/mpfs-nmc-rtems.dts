@@ -24,33 +24,144 @@
 	};
 
 	chosen {
-		stdout-path = "serial1:115200n8";
+		/* No ":115200n8" options: RTEMS looks this up as a plain alias */
+		stdout-path = "serial1";
 	};
 
+	/* Core nodes (CPUs, CPU clock, CLINT, PLIC) copied verbatim from RTEMS 6.1 bsps/riscv/riscv/dts/mpfs.dts:
+	 * the RTEMS BSP looks for these exact compatibles, all 5 harts, and "msspllclk" as the first fixed-clock. */
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
+
 		timebase-frequency = <1000000>;
 
-		cpu1: cpu@1 {
-			compatible = "sifive,u54-mc", "sifive,rocket0", "riscv";
+		cpu0: cpu@0 {
+			clock-frequency = <0>;
+			compatible = "sifive,e51", "sifive,rocket0", "riscv";
 			device_type = "cpu";
-			mmu-type = "riscv,sv39";
-			reg = <1>;
-			riscv,isa = "rv64imafdc";
-			riscv,isa-base = "rv64i";
-			riscv,isa-extensions = "i\0m\0a\0f\0d\0c\0zicntr\0zicsr\0zifencei\0zihpm";
-			clocks = <&clkcfg 0x00>;
-			status = "okay";
-
-			cpu1_intc: interrupt-controller {
-				#interrupt-cells = <0x01>;
-				#address-cells = <1>;
-				#size-cells = <0>;
+			i-cache-block-size = <64>;
+			i-cache-sets = <128>;
+			i-cache-size = <16384>;
+			reg = <0>;
+			riscv,isa = "rv64imac";
+			status = "disabled";
+			cpu0intc: interrupt-controller {
+				#interrupt-cells = <1>;
 				compatible = "riscv,cpu-intc";
 				interrupt-controller;
 			};
 		};
+		cpu1: cpu@1 {
+			clock-frequency = <0>;
+			compatible = "sifive,u54-mc", "sifive,rocket0", "riscv";
+			d-cache-block-size = <64>;
+			d-cache-sets = <64>;
+			d-cache-size = <32768>;
+			d-tlb-sets = <1>;
+			d-tlb-size = <32>;
+			device_type = "cpu";
+			i-cache-block-size = <64>;
+			i-cache-sets = <64>;
+			i-cache-size = <32768>;
+			i-tlb-sets = <1>;
+			i-tlb-size = <32>;
+			mmu-type = "riscv,sv39";
+			reg = <1>;
+			riscv,isa = "rv64imafdc";
+			tlb-split;
+			status = "okay";
+			cpu1intc: interrupt-controller {
+				#interrupt-cells = <1>;
+				compatible = "riscv,cpu-intc";
+				interrupt-controller;
+			};
+		};
+
+		cpu2: cpu@2 {
+			clock-frequency = <0>;
+			compatible = "sifive,u54-mc", "sifive,rocket0", "riscv";
+			d-cache-block-size = <64>;
+			d-cache-sets = <64>;
+			d-cache-size = <32768>;
+			d-tlb-sets = <1>;
+			d-tlb-size = <32>;
+			device_type = "cpu";
+			i-cache-block-size = <64>;
+			i-cache-sets = <64>;
+			i-cache-size = <32768>;
+			i-tlb-sets = <1>;
+			i-tlb-size = <32>;
+			mmu-type = "riscv,sv39";
+			reg = <2>;
+			riscv,isa = "rv64imafdc";
+			tlb-split;
+			status = "okay";
+			cpu2intc: interrupt-controller {
+				#interrupt-cells = <1>;
+				compatible = "riscv,cpu-intc";
+				interrupt-controller;
+			};
+		};
+
+		cpu3: cpu@3 {
+			clock-frequency = <0>;
+			compatible = "sifive,u54-mc", "sifive,rocket0", "riscv";
+			d-cache-block-size = <64>;
+			d-cache-sets = <64>;
+			d-cache-size = <32768>;
+			d-tlb-sets = <1>;
+			d-tlb-size = <32>;
+			device_type = "cpu";
+			i-cache-block-size = <64>;
+			i-cache-sets = <64>;
+			i-cache-size = <32768>;
+			i-tlb-sets = <1>;
+			i-tlb-size = <32>;
+			mmu-type = "riscv,sv39";
+			reg = <3>;
+			riscv,isa = "rv64imafdc";
+			tlb-split;
+			status = "okay";
+			cpu3intc: interrupt-controller {
+				#interrupt-cells = <1>;
+				compatible = "riscv,cpu-intc";
+				interrupt-controller;
+			};
+		};
+
+		cpu4: cpu@4 {
+			clock-frequency = <0>;
+			compatible = "sifive,u54-mc", "sifive,rocket0", "riscv";
+			d-cache-block-size = <64>;
+			d-cache-sets = <64>;
+			d-cache-size = <32768>;
+			d-tlb-sets = <1>;
+			d-tlb-size = <32>;
+			device_type = "cpu";
+			i-cache-block-size = <64>;
+			i-cache-sets = <64>;
+			i-cache-size = <32768>;
+			i-tlb-sets = <1>;
+			i-tlb-size = <32>;
+			mmu-type = "riscv,sv39";
+			reg = <4>;
+			riscv,isa = "rv64imafdc";
+			tlb-split;
+			status = "okay";
+			cpu4intc: interrupt-controller {
+				#interrupt-cells = <1>;
+				compatible = "riscv,cpu-intc";
+				interrupt-controller;
+			};
+		};
+	};
+
+	refclk: refclk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <600000000>;
+		clock-output-names = "msspllclk";
 	};
 
 	/* Fabric APB clock for the FIC3 peripherals (PF_CCC_C0 OUT3, 50 MHz) */
@@ -60,22 +171,22 @@
 		clock-frequency = <50000000>;
 	};
 
-	refclk: mssrefclk {
-		compatible = "fixed-clock";
-		#clock-cells = <0>;
-		clock-frequency = <125000000>;
-	};
-
 	soc {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		compatible = "simple-bus";
 		ranges;
 
-		clint@2000000 {
-			compatible = "sifive,clint0";
-			reg = <0x00 0x2000000 0x0 0xC000>;
-			interrupts-extended = <&cpu1_intc 0x03 &cpu1_intc 0x07>;
+		clint0: clint@2000000 {
+			compatible = "riscv,clint0";
+			interrupts-extended = <&cpu0intc 3 &cpu0intc 7
+						&cpu1intc 3 &cpu1intc 7
+						&cpu2intc 3 &cpu2intc 7
+						&cpu3intc 3 &cpu3intc 7
+						&cpu4intc 3 &cpu4intc 7>;
+			reg = <0x0 0x2000000 0x0 0x10000>;
+			reg-names = "control";
+			clock-frequency = <1000000>;
 		};
 
 		clkcfg: clkcfg@20002000 {
@@ -88,13 +199,18 @@
 		};
 
 		plic: interrupt-controller@c000000 {
-			compatible = "sifive,plic-1.0.0";
-			reg = <0x0 0xc000000>, <0x0 0x4000000>;
 			#interrupt-cells = <1>;
-			#address-cells = <2>;
+			compatible = "riscv,plic0";
+			reg = <0x0 0xc000000 0x0 0x4000000>;
+			riscv,max-priority = <7>;
 			riscv,ndev = <186>;
 			interrupt-controller;
-			interrupts-extended = <&cpu1_intc 11 &cpu1_intc 9>;
+			interrupts-extended = <
+				&cpu0intc 11
+				&cpu1intc 11 &cpu1intc 9
+				&cpu2intc 11 &cpu2intc 9
+				&cpu3intc 11 &cpu3intc 9
+				&cpu4intc 11 &cpu4intc 9>;
 		};
 
 		/* eMMC Subsystem: 4-bit width, 3.3 V I/O only, High Speed DDR (same as Linux DT) */
@@ -112,6 +228,24 @@
 			status = "okay";
 		};
 
+		/*
+		 * MMUART_1: Active on Bank2 (Main Boot Console)
+		 * Keep this the first ns16550a node: the RTEMS console driver
+		 * uses only the first one (RISCV_CONSOLE_MAX_NS16550_DEVICES = 1).
+		 */
+		uart1: serial@20100000 {
+			compatible = "ns16550a";
+			reg = <0x0 0x20100000 0x0 0x400>;
+			reg-io-width = <4>;
+			reg-shift = <2>;
+			interrupt-parent = <&plic>;
+			interrupts = <91>;
+			current-speed = <115200>;
+			clock-frequency = <150000000>;
+			clocks = <&clkcfg 9>;
+			status = "okay";
+		};
+
 		/* MMUART_0: Active on Bank2 A */
 		uart0: serial@20000000 {
 			compatible = "ns16550a";
@@ -121,20 +255,8 @@
 			interrupt-parent = <&plic>;
 			interrupts = <90>;
 			current-speed = <115200>;
+			clock-frequency = <150000000>;
 			clocks = <&clkcfg 8>;
-			status = "okay";
-		};
-
-		/* MMUART_1: Active on Bank2 (Main Boot Console) */
-		uart1: serial@20100000 {
-			compatible = "ns16550a";
-			reg = <0x0 0x20100000 0x0 0x400>;
-			reg-io-width = <4>;
-			reg-shift = <2>;
-			interrupt-parent = <&plic>;
-			interrupts = <91>;
-			current-speed = <115200>;
-			clocks = <&clkcfg 9>;
 			status = "okay";
 		};
 
@@ -147,6 +269,7 @@
 			interrupt-parent = <&plic>;
 			interrupts = <92>;
 			current-speed = <115200>;
+			clock-frequency = <150000000>;
 			clocks = <&clkcfg 10>;
 			status = "okay";
 		};
@@ -155,6 +278,7 @@
 		uart3: serial@20104000 {
 			compatible = "ns16550a";
 			reg = <0x0 0x20104000 0x0 0x400>;
+			clock-frequency = <150000000>;
 			clocks = <&clkcfg 11>;
 			status = "disabled";
 		};
@@ -168,6 +292,7 @@
 			interrupt-parent = <&plic>;
 			interrupts = <94>;
 			current-speed = <115200>;
+			clock-frequency = <150000000>;
 			clocks = <&clkcfg 12>;
 			status = "okay";
 		};
