@@ -1,4 +1,4 @@
-# MPFS NMC RTEMS BSP (`nmc-rtems-bsp`)
+# NMC RTEMS BSP (`nmc-rtems-bsp`)
 
 Boot **RTEMS** on the Microchip PolarFire SoC (MPFS) NMC platform: the NMC device tree for RTEMS, a sample application built with it, and the steps to build and boot your own RTEMS application.
 
@@ -59,7 +59,7 @@ git clone https://github.com/nextage-llc/nmc-bsp.git
 make -C nmc-bsp/hart-software-services/tools/hss-payload-generator
 ```
 
-> `nmc-bsp` is a private repository: clone it with the GitHub account that was given access. The generator is built at `nmc-bsp/hart-software-services/tools/hss-payload-generator/hss-payload-generator`.
+> The generator is built at `nmc-bsp/hart-software-services/tools/hss-payload-generator/hss-payload-generator`.
 
 ---
 

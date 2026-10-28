@@ -118,7 +118,7 @@ cp payload.bin /mnt/c/nmc-images/payload-yocto.bin
 cp mchp-base-image-mpfs-icicle-kit.rootfs.wic.gz /mnt/c/nmc-images/nmc2v3-yocto.wic.gz
 ```
 
-> The `-yocto` names avoid confusion with the Buildroot `payload.bin`. Always send the compressed `.wic.gz` (about 140 MB) — the uncompressed `.wic` (about 720 MB) does not fit in U-Boot's RAM. To refresh the BSP's samples, copy them into `nmc-bsp/nmc-linux-bsp/sample/yocto/` instead.
+> The `-yocto` names avoid confusion with the Buildroot `payload.bin`. Always flash the compressed `.wic.gz` (about 140 MB), not the `.wic` (see [Known Issues](#tftpboot-fails-with-trying-to-overwrite-reserved-memory)).
 
 ---
 

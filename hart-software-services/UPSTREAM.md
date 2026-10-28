@@ -15,12 +15,8 @@ with the NMC2v3 board added. Everything else is as Microchip ships it.
 Both options are enabled only in `boards/NMC2v3/def_config`: the NMC2v3 eMMC has
 4 data lines and 3.3 V I/O. Other boards build exactly as upstream.
 
-Not included from upstream: `.github/` (CI) and `boards/custom-board-design/` (replaced by `boards/NMC2v3/`).
+Not included from upstream: `.github/` (CI), `boards/custom-board-design/` (replaced by `boards/NMC2v3/`) and Microchip's other boards (`aries-m100pfsevp`, `mpfs-beaglev-fire`, `mpfs-disco-kit`, `mpfs-icicle-kit`, `mpfs-icicle-kit-es`, `mpfs-video-kit`, `polarberry`). Each board folder stands alone, so the NMC2v3 build is unchanged.
 
 ## Build
 
-```
-make BOARD=NMC2v3
-```
-
-`.config` is created from `boards/NMC2v3/def_config` on the first build.
+See [Rebuild the HSS](../README.md#rebuild-the-hss). Always pass `BOARD=NMC2v3`: without it, the Makefile defaults to Microchip's Icicle Kit, which is not included.

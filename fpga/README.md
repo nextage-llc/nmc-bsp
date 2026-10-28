@@ -17,19 +17,21 @@ Do this on a new board, and whenever you change the FPGA design or the HSS. You 
 
 Next, load an operating system: [Linux](../nmc-linux-bsp/README.md) or [RTEMS](../nmc-rtems-bsp/README.md).
 
-## What the Design Contains
+## Fabric Memory Map
 
-| Block | Linux device | Address / interrupt |
-| ----- | ------------ | ------------------- |
-| MSS MMUART_0–2, MMUART_4 | `ttyS0`–`ttyS3` | MSS |
-| Core16550 UART (FPGA_422_1, RS-422) | `ttyS4` | `0x5100_0000`, PLIC 120 |
-| Core16550 UART (FPGA_422_2, RS-422) | `ttyS5` | `0x5200_0000`, PLIC 121 |
-| Core16550 UART (3.3 V TTL) | `ttyS6` | `0x5300_0000`, PLIC 122 |
-| CoreGPIO: SW2, RGB LED | GPIO lines `SW2_N`, `LED_R`, `LED_G`, `LED_B` | `0x5400_0000`, PLIC 123 |
-| CAN_0 (MSS controller, pins through the fabric) | `can0` | MSS |
-| PCIe root port x2 | disabled in the Linux device tree | `0x4…` |
+The fabric blocks the MSS reaches over FIC3 (APB, 50 MHz) and FIC1 (AXI). Fabric interrupt `MSS_INT_F2M[n]` is PLIC interrupt 118 + n. MSS peripherals (Ethernet, CAN, eMMC, QSPI, SPI, I2C, MSS UARTs and GPIO) and connector pins are in [`BOARD_INTERFACES.md`](../BOARD_INTERFACES.md).
 
-Fabric peripherals are on FIC3 (APB, 50 MHz); fabric interrupt `MSS_INT_F2M[n]` is PLIC interrupt 118 + n. Connector pins are in [`BOARD_INTERFACES.md`](../BOARD_INTERFACES.md).
+| Block | Address | Interrupt | Linux |
+| ----- | ------- | --------- | ----- |
+| MIV_IHC (inter-hart communication, for Linux + RTEMS on separate harts) | `0x5000_0000` (FIC3 slot 0) | F2M[59–63] = PLIC 177–181 | not used |
+| Core16550 UART, FPGA_422_1 (RS-422) | `0x5100_0000` (slot 1) | F2M[2] = PLIC 120 | `ttyS4` |
+| Core16550 UART, FPGA_422_2 (RS-422) | `0x5200_0000` (slot 2) | F2M[3] = PLIC 121 | `ttyS5` |
+| Core16550 UART, J1 (3.3 V TTL) | `0x5300_0000` (slot 3) | F2M[4] = PLIC 122 | `ttyS6` |
+| CoreGPIO: SW2, RGB LED | `0x5400_0000` (slot 4) | F2M[5] = PLIC 123 | lines `SW2_N`, `LED_R`, `LED_G`, `LED_B` |
+| PCIe root port x2 | config `0xE000_0000` + memory `0xE100_0000` (FIC1); registers `0x4300_4000` (FIC3) | F2M[1] = PLIC 119 | disabled in the device tree |
+| CoreSmartBERT ×2 (XCVR_1 on J4, XCVR_2 on J8) | none (JTAG, Libero SmartDebug) | none | none |
+
+**Free for your own blocks:** FIC3 slots 5–15 (`0x5500_0000`–`0x5F00_0000`) and interrupts F2M[6–58] (PLIC 124–176).
 
 ## Customize the Design
 

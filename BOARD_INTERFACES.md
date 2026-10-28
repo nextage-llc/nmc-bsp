@@ -1,6 +1,6 @@
 # NMC2v3 Board Interfaces
 
-Each connector function on the NMC2v3, the Linux device it appears as with the reference design, and how to use it. RTEMS uses the same numbering (`serial0`–`serial6`, `can0`/`can1`). Addresses and interrupts are in [`fpga/README.md`](./fpga/README.md#what-the-design-contains).
+Each connector function on the NMC2v3, the Linux device it appears as with the reference design, and how to use it. RTEMS uses the same numbering (`serial0`–`serial6`, `can0`/`can1`). Fabric addresses and interrupts are in [`fpga/README.md`](./fpga/README.md#fabric-memory-map).
 
 ## Serial (115200 8N1 by default)
 
