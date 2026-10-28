@@ -16,12 +16,12 @@ Everything to bring up the Nextage **NMC2v3** (Microchip PolarFire SoC MPFS250T)
 ## How the Board Boots
 
 ```text
-eNVM:  HSS bootloader                  ← programmed with nmc2v3.job (fpga/)
+eNVM:  HSS bootloader                  ← programmed with nmc-fpga.job (fpga/)
          │  loads the payload from eMMC
 eMMC:  payload
-         ├── RTEMS: the RTEMS application                    (payload-rtems.bin)
-         └── Linux: U-Boot ──► kernel + rootfs on the eMMC   (payload-buildroot.bin + nmc2v3-buildroot.img,
-                                                              or payload-yocto.bin + nmc2v3-yocto.wic.gz)
+         ├── RTEMS: the RTEMS application                    (nmc-rtems-payload.bin)
+         └── Linux: U-Boot ──► kernel + rootfs on the eMMC   (nmc-buildroot-payload.bin + nmc-buildroot.img,
+                                                              or nmc-yocto-payload.bin + nmc-yocto.wic.gz)
 ```
 
 RTEMS or Linux is just a matter of which payload (and, for Linux, which disk image) is on the eMMC.
@@ -34,7 +34,7 @@ nmc-bsp/
 ├── fpga/                     # Program the board; MSS configuration; customizing the FPGA design
 ├── hart-software-services/   # HSS bootloader source (Microchip HSS + NMC2v3 board, see UPSTREAM.md)
 ├── nmc-linux-bsp/            # Linux: Buildroot and Yocto
-├── nmc-rtems-bsp/            # RTEMS: device tree and sample application
+├── nmc-rtems-bsp/            # RTEMS: device tree and payload configuration
 └── docs/                     # Bring-up guides (PDF)
 ```
 

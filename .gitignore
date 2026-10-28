@@ -1,0 +1,7 @@
+# Built files are in the GitHub release downloads, not in git.
+# Payload generator built from the HSS source (RTEMS README Step 2)
+hart-software-services/tools/hss-payload-generator/hss-payload-generator
+# RTEMS Step 6 outputs (the sample ticker ELF is tracked)
+nmc-rtems-bsp/sample/*
+!nmc-rtems-bsp/sample/rtems-payload.yaml
+!nmc-rtems-bsp/sample/ticker

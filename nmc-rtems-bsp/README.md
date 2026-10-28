@@ -1,6 +1,6 @@
 # NMC RTEMS BSP (`nmc-rtems-bsp`)
 
-Boot **RTEMS** on the Microchip PolarFire SoC (MPFS) NMC platform: the NMC device tree for RTEMS, a sample application built with it, and the steps to build and boot your own RTEMS application.
+Boot **RTEMS** on the Microchip PolarFire SoC (MPFS) NMC platform: the NMC device tree for RTEMS and the steps to build and boot your own RTEMS application.
 
 The NMC uses RTEMS 6.1's standard PolarFire SoC BSP (`riscv/mpfs64imafdc`) with the NMC device tree built in, so RTEMS sees the NMC's peripherals with the same numbering as Linux (`serial0`–`serial6` = `ttyS0`–`ttyS6`, `can0` = CAN_0, `can1` = CAN_1).
 
@@ -15,10 +15,11 @@ nmc-rtems-bsp/
 │   ├── mpfs-nmc-rtems.dtb              # Compiled device tree
 │   └── mpfs-nmc-rtems-dtb.c            # Same, as the C array the RTEMS BSP builds in
 └── sample/
-    ├── ticker                          # Sample RTEMS application (ELF), built with the NMC device tree
-    ├── rtems-payload.yaml              # HSS payload configuration
-    └── payload-rtems.bin               # Boot image made from ticker (ready to flash)
+    ├── ticker                          # Sample application (ELF), built with the NMC device tree
+    └── rtems-payload.yaml              # HSS payload configuration
 ```
+
+The ready-to-flash boot image made from `ticker` is in the [release downloads](https://github.com/nextage-llc/nmc-bsp/releases): `nmc-rtems-payload.bin`.
 
 The HSS bootloader and its payload generator live in [`../hart-software-services`](../hart-software-services).
 
@@ -32,8 +33,8 @@ The HSS bootloader and its payload generator live in [`../hart-software-services
 
 ## Choose Your Path
 
-- **Use the pre-built sample:** `sample/payload-rtems.bin` is ready to flash. Skip to [Part 3: Hardware Setup](#part-3-hardware-setup--serial-terminals).
-- **Make a boot image from your own RTEMS application:** Part 1, then Part 2 Step 6.
+- **Use the pre-built sample:** download `nmc-rtems-payload.bin` from the [release downloads](https://github.com/nextage-llc/nmc-bsp/releases). Skip to [Part 3: Hardware Setup](#part-3-hardware-setup--serial-terminals).
+- **Make the boot image yourself,** from the sample `ticker` or your own RTEMS application: Part 1, then Part 2 Step 6.
 - **Build RTEMS for the NMC from source** (toolchain, BSP and the sample): Parts 1 and 2.
 
 ---
@@ -110,13 +111,13 @@ rtems-bin2c -C -A 8 -N system_dtb mpfs-nmc-rtems.dtb mpfs-nmc-rtems-dtb
 
 Then repeat `./waf` (and `./waf install`) in `~/nmc-rtems/rtems`.
 
-### Step 6: Make the Boot Image (`payload-rtems.bin`)
+### Step 6: Make the Boot Image (`nmc-rtems-payload.bin`)
 
-Copy your application ELF next to `rtems-payload.yaml` (for the sample: `cp ~/nmc-rtems/rtems/build/riscv/mpfs64imafdc/testsuites/samples/ticker.exe sample/ticker`). If your ELF has another name, change `ticker` under `payloads:` in `rtems-payload.yaml` to match. Then:
+`sample/` already holds the sample `ticker`. To use your own application instead, copy its ELF next to `rtems-payload.yaml` (for a rebuilt sample: `cp ~/nmc-rtems/rtems/build/riscv/mpfs64imafdc/testsuites/samples/ticker.exe sample/ticker`). If your ELF has another name, change `ticker` under `payloads:` in `rtems-payload.yaml` to match. Then:
 
 ```bash
 cd ~/nmc-rtems/nmc-bsp/nmc-rtems-bsp/sample
-../../hart-software-services/tools/hss-payload-generator/hss-payload-generator -c rtems-payload.yaml payload-rtems.bin
+../../hart-software-services/tools/hss-payload-generator/hss-payload-generator -c rtems-payload.yaml nmc-rtems-payload.bin
 ```
 
 > **Note:** Seeing `NOTICE: ticker: ignoring >>exec-addr=0x1000000000<< as payload is an ELF file` is normal. ELF binaries contain embedded entry points, so the tool automatically uses the embedded execution address. RTEMS runs from the cached high DDR at `0x10_0000_0000`.
@@ -138,11 +139,11 @@ Connect the board's USB cable to the PC and open two Tera Term windows at **1152
 
 ## Part 4: Flash and Boot
 
-### Step 8: Flash `payload-rtems.bin` to eMMC (YMODEM, UART0)
+### Step 8: Flash `nmc-rtems-payload.bin` to eMMC (YMODEM, UART0)
 
 1. Power cycle or press Reset, and immediately press any key in Window 1 to stop auto-boot at the HSS `>>` prompt.
 2. Type `YMODEM` and press Enter, then `2` (**MMC Init**) and `3` (**YMODEM Receive**), each followed by Enter.
-3. In Window 1, choose **File → Transfer → YMODEM → Send...**, select `sample/payload-rtems.bin` (or your own), click **Open**, and wait for the transfer to finish.
+3. In Window 1, choose **File → Transfer → YMODEM → Send...**, select `nmc-rtems-payload.bin` (downloaded, or your own from Step 6), click **Open**, and wait for the transfer to finish.
 4. Type `5` (**MMC Write**) to write it permanently to eMMC, then `6` to quit.
 
 ### Step 9: Boot the Application

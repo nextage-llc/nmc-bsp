@@ -2,16 +2,16 @@
 
 The NMC2v3 reference design for the PolarFire SoC MPFS250T: the FPGA fabric design and the Microcontroller Subsystem (MSS) configuration the rest of this BSP is built against. Programming it also loads the HSS bootloader into eNVM.
 
-- **Programming file** (FPGA design + HSS) `nmc2v3.job`, **Libero SoC project archive** `nmc2v3-libero.zip` and **HSS eNVM image** `nmc2v3-hss.hex`: [release downloads](https://github.com/nextage-llc/nmc-bsp/releases)
+- **Programming file** (FPGA design + HSS) `nmc-fpga.job`, **Libero SoC project archive** `nmc-libero.zip` and **HSS eNVM image** `nmc-hss.hex`: [release downloads](https://github.com/nextage-llc/nmc-bsp/releases)
 - **MSS configuration:** [`mss/`](./mss) · **HSS source:** [`../hart-software-services`](../hart-software-services)
 - **Tools:** Libero SoC 2025.2 (includes FlashPro Express and the PolarFire SoC MSS Configurator)
 
 ## Program the Board
 
-Do this on a new board, and whenever you change the FPGA design or the HSS. You need FlashPro Express (with Libero SoC, or the standalone Microchip Program and Debug Tools), a FlashPro5/6 programmer and `nmc2v3.job`.
+Do this on a new board, and whenever you change the FPGA design or the HSS. You need FlashPro Express (with Libero SoC, or the standalone Microchip Program and Debug Tools), a FlashPro5/6 programmer and `nmc-fpga.job`.
 
 1. Connect the programmer to the JTAG header **J2** (10-pin) and to the PC by USB, then power the board.
-2. In FlashPro Express choose **Project → New Job Project from FlashPro Express Job**, select `nmc2v3.job`, pick a folder, and click **OK**.
+2. In FlashPro Express choose **Project → New Job Project from FlashPro Express Job**, select `nmc-fpga.job`, pick a folder, and click **OK**.
 3. Check that the programmer is listed, leave the action on **PROGRAM**, and click **RUN**. It ends with **RUN PASSED** after a few minutes.
 4. Disconnect the programmer and power cycle the board: the HSS boot banner appears on UART0 (J3, 115200 8N1).
 
@@ -35,7 +35,7 @@ The fabric blocks the MSS reaches over FIC3 (APB, 50 MHz) and FIC1 (AXI). Fabric
 
 ## Customize the Design
 
-**Open the project:** unzip `nmc2v3-libero.zip` and open `NMC2v3.prjx` in Libero SoC 2025.2. The HSS image the design uses is in the project's `hss/` folder. To program your version, generate the bitstream, use **Export FlashPro Express Job**, and program it as above.
+**Open the project:** unzip `nmc-libero.zip` and open `NMC2v3.prjx` in Libero SoC 2025.2. The HSS image the design uses is in the project's `hss/` folder. To program your version, generate the bitstream, use **Export FlashPro Express Job**, and program it as above.
 
 **Change the MSS configuration** — it is used in three places, which must match:
 

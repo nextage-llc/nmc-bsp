@@ -29,15 +29,15 @@ meta-nmc/
 
 ## Before You Begin
 
-- **Program the board first** (FPGA design + HSS) — see the [FPGA README](../../fpga/README.md). The HSS provides the UART0 prompt used to flash `payload-yocto.bin`.
+- **Program the board first** (FPGA design + HSS) — see the [FPGA README](../../fpga/README.md). The HSS provides the UART0 prompt used to flash the payload.
 - **Host:** WSL2 with Debian 13 (tested; Ubuntu 22.04/24.04 should also work, not tested for this release), Tera Term, and a TFTP server such as tftpd64; about 100 GB free disk and 16 GB RAM. The first build (downloads included) took under 2 hours on an 8-core PC.
 - **Connections:** USB-to-serial on UART0 and UART1, and an Ethernet cable from the board's J19 (eth0) to the PC.
 
 ## Choose Your Path
 
-Two images go on the board: **`payload-yocto.bin`** (HSS-wrapped U-Boot) and **`nmc2v3-yocto.wic.gz`** (compressed eMMC disk image: boot partition with `fitImage` + `boot.scr`, and the rootfs).
+Two images go on the board: **`nmc-yocto-payload.bin`** (HSS-wrapped U-Boot) and **`nmc-yocto.wic.gz`** (compressed eMMC disk image: boot partition with `fitImage` + `boot.scr`, and the rootfs).
 
-- **Pre-built:** `sample/yocto/payload-yocto.bin` plus `nmc2v3-yocto.wic.gz` from the [release downloads](https://github.com/nextage-llc/nmc-bsp/releases) — put both in a Windows folder (e.g. `C:\nmc-images`) and skip to [Part 2](#part-2-hardware-setup--serial-terminals).
+- **Pre-built:** download both from the [release downloads](https://github.com/nextage-llc/nmc-bsp/releases), put them in a Windows folder (e.g. `C:\nmc-images`) and skip to [Part 2](#part-2-hardware-setup--serial-terminals).
 - **From source:** start at [Part 1](#part-1-build-the-images).
 
 > Flash the payload and disk image from the same build system: the Yocto U-Boot boots `fitImage` from partition 1 via `boot.scr`, the Buildroot one boots `mpfs_icicle.itb` from partition 2.
@@ -114,11 +114,11 @@ The TFTP server and Tera Term run on Windows. Copy the images out (rather than b
 ```bash
 mkdir -p /mnt/c/nmc-images
 cd ~/nmc-yocto/build/tmp-glibc/deploy/images/mpfs-icicle-kit
-cp payload.bin /mnt/c/nmc-images/payload-yocto.bin
-cp mchp-base-image-mpfs-icicle-kit.rootfs.wic.gz /mnt/c/nmc-images/nmc2v3-yocto.wic.gz
+cp payload.bin /mnt/c/nmc-images/nmc-yocto-payload.bin
+cp mchp-base-image-mpfs-icicle-kit.rootfs.wic.gz /mnt/c/nmc-images/nmc-yocto.wic.gz
 ```
 
-> The `-yocto` names avoid confusion with the Buildroot `payload.bin`. Always flash the compressed `.wic.gz` (about 140 MB), not the `.wic` (see [Known Issues](#tftpboot-fails-with-trying-to-overwrite-reserved-memory)).
+> These are the release download names, so the flashing steps are the same for your build and the pre-built images. Always flash the compressed `.wic.gz` (about 140 MB), not the `.wic` (see [Known Issues](#tftpboot-fails-with-trying-to-overwrite-reserved-memory)).
 
 ---
 
@@ -137,18 +137,18 @@ Connect the board's USB cable to the PC and open two Tera Term windows at **1152
 
 ## Part 3: Flash and Boot
 
-### Step 7: Flash `payload-yocto.bin` to eMMC (YMODEM, UART0)
+### Step 7: Flash `nmc-yocto-payload.bin` to eMMC (YMODEM, UART0)
 
 1. Power cycle or press Reset, and immediately press any key in Window 1 to stop auto-boot at the HSS `>>` prompt.
 2. Type `YMODEM` and press Enter, then `2` (**MMC Init**) and `3` (**YMODEM Receive**), each followed by Enter.
-3. In Window 1, choose **File → Transfer → YMODEM → Send...**, select `payload-yocto.bin` (`C:\nmc-images\payload-yocto.bin`, or `sample/yocto/payload-yocto.bin`), click **Open**, and wait for the transfer to finish.
+3. In Window 1, choose **File → Transfer → YMODEM → Send...**, select `C:\nmc-images\nmc-yocto-payload.bin`, click **Open**, and wait for the transfer to finish.
 4. Type `5` (**MMC Write**) to write it permanently to eMMC, then `6` to quit.
 
 > **Checkpoint:** a reset should now land at a U-Boot prompt in Window 2. Resolve this before Step 8.
 
-### Step 8: Flash `nmc2v3-yocto.wic.gz` to eMMC (TFTP, UART1)
+### Step 8: Flash `nmc-yocto.wic.gz` to eMMC (TFTP, UART1)
 
-1. Connect the board's J19 Ethernet port (eth0 end of the cable) to the PC. Start a TFTP server (e.g. **tftpd64**) on that interface, pointed at the folder containing `nmc2v3-yocto.wic.gz` (e.g. `C:\nmc-images`). Note the interface's IP address; set it manually on the host adapter if needed.
+1. Connect the board's J19 Ethernet port (eth0 end of the cable) to the PC. Start a TFTP server (e.g. **tftpd64**) on that interface, pointed at the folder containing `nmc-yocto.wic.gz` (e.g. `C:\nmc-images`). Note the interface's IP address; set it manually on the host adapter if needed.
 2. In Window 2, set `serverip` to that address and `ipaddr` to an unused address on the same subnet:
 
    ```text
@@ -159,7 +159,7 @@ Connect the board's USB cable to the PC and open two Tera Term windows at **1152
 3. Load and write the image. `gzwrite` decompresses while writing, so only the compressed image has to fit in RAM (check it exists with `help gzwrite`):
 
    ```text
-   tftpboot 0x84000000 nmc2v3-yocto.wic.gz
+   tftpboot 0x84000000 nmc-yocto.wic.gz
    mmc dev 0
    gzwrite mmc 0 0x84000000 ${filesize}
    ```
@@ -212,7 +212,7 @@ Deleting `hosttools` is needed because BitBake keeps links to the host programs 
 
 ### `tftpboot` fails with `trying to overwrite reserved memory`
 
-The uncompressed `.wic` does not fit in U-Boot's RAM at the load address. Send `nmc2v3-yocto.wic.gz` and write it with `gzwrite` (Step 8).
+The uncompressed `.wic` does not fit in U-Boot's RAM at the load address. Send `nmc-yocto.wic.gz` and write it with `gzwrite` (Step 8).
 
 ---
 

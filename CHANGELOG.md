@@ -22,7 +22,7 @@ First release of the NMC2v3 BSP (`nextage-llc/nmc-bsp`): FPGA reference design, 
 - **Linux:**
   - Serial `ttyS4`–`ttyS6` (fabric UARTs); MMUART_4 is `serial3` (`ttyS3`); 7 serial ports.
   - CAN_0 enabled: `can0` = CAN_0 (J12 14/15), `can1` = CAN_1 (J12 11/12).
-  - `pcie0` disabled; sample images run with PCIe off.
+  - `pcie0` disabled; the pre-built images run with PCIe off.
   - eMMC at 3.3 V High Speed DDR (52 MHz) in Linux and U-Boot (Linux previously chose HS200, which needs 1.8 V); QSPI flash at 50 MHz.
   - `/dev/spidev0.0` + `spi-tools`; named GPIO lines for the LEDs and SW2.
   - **Buildroot:** one-command build (`make nmc_defconfig && make`) from an external tree — no copying configs into the build folder.
@@ -35,15 +35,14 @@ First release of the NMC2v3 BSP (`nextage-llc/nmc-bsp`): FPGA reference design, 
 
 | File | SHA-256 |
 | ---- | ------- |
-| `nmc2v3.job` | |
-| `nmc2v3-libero.zip` | |
-| `nmc2v3-hss.hex` | |
-| `nmc2v3-buildroot-payload.bin` (= `sample/buildroot/payload-buildroot.bin`) | |
-| `nmc2v3-buildroot.img` | |
-| `nmc2v3-yocto-payload.bin` (= `sample/yocto/payload-yocto.bin`) | |
-| `nmc2v3-yocto.wic.gz` | |
-| `nmc2v3-rtems-payload.bin` (= `sample/payload-rtems.bin`) | |
-| `nmc2v3-rtems-ticker.elf` (= `sample/ticker`) | |
+| `nmc-fpga.job` | |
+| `nmc-libero.zip` | |
+| `nmc-hss.hex` | |
+| `nmc-buildroot-payload.bin` | |
+| `nmc-buildroot.img` | |
+| `nmc-yocto-payload.bin` | |
+| `nmc-yocto.wic.gz` | |
+| `nmc-rtems-payload.bin` | |
 
 ### Known issues
 

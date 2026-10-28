@@ -12,9 +12,9 @@ Build and boot **Linux** on the NMC2v3 with Buildroot. This folder is a Buildroo
 
 ## Choose Your Path
 
-Two images go on the board: **`payload-buildroot.bin`** (HSS-wrapped U-Boot) and **`nmc2v3-buildroot.img`** (eMMC disk image: kernel + DTB + rootfs).
+Two images go on the board: **`nmc-buildroot-payload.bin`** (HSS-wrapped U-Boot) and **`nmc-buildroot.img`** (eMMC disk image: kernel + DTB + rootfs).
 
-- **Pre-built:** `sample/buildroot/payload-buildroot.bin` plus `nmc2v3-buildroot.img` from the [release downloads](https://github.com/nextage-llc/nmc-bsp/releases) — put both in a Windows folder (e.g. `C:\nmc-images`) and skip to [Part 2](#part-2-hardware-setup--serial-terminals).
+- **Pre-built:** download both from the [release downloads](https://github.com/nextage-llc/nmc-bsp/releases), put them in a Windows folder (e.g. `C:\nmc-images`) and skip to [Part 2](#part-2-hardware-setup--serial-terminals).
 - **From source:** start at [Part 1](#part-1-build-the-images).
 
 ---
@@ -61,8 +61,8 @@ The TFTP server and Tera Term run on Windows, so copy the two images out of WSL 
 
 ```bash
 mkdir -p /mnt/c/nmc-images
-cp ~/nmc-buildroot/buildroot/output/images/payload.bin /mnt/c/nmc-images/payload-buildroot.bin
-cp ~/nmc-buildroot/buildroot/output/images/sdcard.img /mnt/c/nmc-images/nmc2v3-buildroot.img
+cp ~/nmc-buildroot/buildroot/output/images/payload.bin /mnt/c/nmc-images/nmc-buildroot-payload.bin
+cp ~/nmc-buildroot/buildroot/output/images/sdcard.img /mnt/c/nmc-images/nmc-buildroot.img
 ```
 
 ### Step 4: Rebuild After a Change
@@ -95,18 +95,18 @@ Connect the board's USB cable to the PC and open two Tera Term windows at **1152
 
 ## Part 3: Flash and Boot
 
-### Step 6: Flash `payload-buildroot.bin` to eMMC (YMODEM, UART0)
+### Step 6: Flash `nmc-buildroot-payload.bin` to eMMC (YMODEM, UART0)
 
 1. Power cycle or press Reset, and immediately press any key in Window 1 to stop auto-boot at the HSS `>>` prompt.
 2. Type `YMODEM` and press Enter, then `2` (**MMC Init**) and `3` (**YMODEM Receive**), each followed by Enter.
-3. In Window 1, choose **File → Transfer → YMODEM → Send...**, select `payload-buildroot.bin` (`C:\nmc-images\payload-buildroot.bin`, or `sample/buildroot/payload-buildroot.bin`), click **Open**, and wait for the transfer to finish.
+3. In Window 1, choose **File → Transfer → YMODEM → Send...**, select `C:\nmc-images\nmc-buildroot-payload.bin`, click **Open**, and wait for the transfer to finish.
 4. Type `5` (**MMC Write**) to write it permanently to eMMC, then `6` to quit.
 
 > **Checkpoint:** a reset should now land at a U-Boot prompt in Window 2. Resolve this before Step 7.
 
-### Step 7: Flash `nmc2v3-buildroot.img` to eMMC (TFTP, UART1)
+### Step 7: Flash `nmc-buildroot.img` to eMMC (TFTP, UART1)
 
-1. Connect the board's J19 Ethernet port (eth0 end of the cable) to the PC. Start a TFTP server (e.g. **tftpd64**) on that interface, pointed at the folder containing `nmc2v3-buildroot.img` (e.g. `C:\nmc-images`).
+1. Connect the board's J19 Ethernet port (eth0 end of the cable) to the PC. Start a TFTP server (e.g. **tftpd64**) on that interface, pointed at the folder containing `nmc-buildroot.img` (e.g. `C:\nmc-images`).
 2. In Window 2, set `serverip` to the PC's Ethernet address and `ipaddr` to an unused address on the same subnet:
 
    ```text
@@ -117,7 +117,7 @@ Connect the board's USB cable to the PC and open two Tera Term windows at **1152
 3. Load and write the image:
 
    ```text
-   tftpboot 0x84000000 nmc2v3-buildroot.img
+   tftpboot 0x84000000 nmc-buildroot.img
    setexpr blkcnt ${filesize} + 0x1ff
    setexpr blkcnt ${blkcnt} / 0x200
    mmc dev 0
