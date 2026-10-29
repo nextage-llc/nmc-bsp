@@ -60,7 +60,7 @@ sudo apt-get install gawk wget git git-lfs diffstat unzip texinfo gcc \
 sudo locale-gen en_US.UTF-8
 ```
 
-Install Google's `repo` tool (Debian does not package it), then open a new terminal so `~/.local/bin` is on your `PATH` (`repo version` should work):
+Install Google's `repo` tool (Debian does not package it):
 
 ```bash
 mkdir -p ~/.local/bin
@@ -68,9 +68,11 @@ curl -fsSL https://storage.googleapis.com/git-repo-downloads/repo -o ~/.local/bi
 chmod a+rx ~/.local/bin/repo
 ```
 
+**Open a new terminal** (so `~/.local/bin` is on your `PATH`), then check that `repo version` works.
+
 ### Step 2: Fetch Microchip's Yocto BSP and This BSP
 
-Set your git identity once (`repo init` asks for it), then fetch the Microchip layers and clone this BSP next to them:
+Set your git identity (`repo init` needs it; skip if already set), then fetch the Microchip layers and clone this BSP next to them:
 
 ```bash
 git config --global user.name "Your Name"
@@ -94,7 +96,7 @@ The NMC build template sets up Microchip's layers, `meta-nmc` and `MACHINE=mpfs-
 cd ~/nmc-yocto
 TEMPLATECONF=$PWD/nmc-bsp/nmc-linux-bsp/yocto/meta-nmc/conf/templates/nmc \
   source openembedded-core/oe-init-build-env
-bitbake-layers show-layers | grep nmc
+bitbake-layers show-layers | grep meta-nmc
 ```
 
 The last command should list `meta-nmc`. The template is applied only when `build/conf` is first created (delete `build/conf` to re-apply it). In every new shell, run `cd ~/nmc-yocto && source openembedded-core/oe-init-build-env` before `bitbake`.
@@ -105,7 +107,7 @@ The last command should list `meta-nmc`. The template is applied only when `buil
 bitbake mchp-base-image
 ```
 
-The first build takes one to a few hours; later builds only rebuild what changed. Look for `There were 0 ERROR messages`. The images are in `build/tmp-glibc/deploy/images/mpfs-icicle-kit/`: `payload.bin` and `mchp-base-image-mpfs-icicle-kit.rootfs.wic.gz`. If the build stops with `do_package` errors mentioning `Bad address`, see [Known Issues](#do_package-fails-with-bad-address).
+The first build takes one to a few hours; later builds only rebuild what changed. Look for `all succeeded` in the `Tasks Summary` line near the end; warnings like `Failed to fetch URL …, attempting MIRRORS` are normal (BitBake then downloads from a mirror). The images are in `build/tmp-glibc/deploy/images/mpfs-icicle-kit/`: `payload.bin` and `mchp-base-image-mpfs-icicle-kit.rootfs.wic.gz`. If the build stops with `do_package` errors mentioning `Bad address`, see [Known Issues](#do_package-fails-with-bad-address).
 
 ### Step 5: Copy the Images to Windows
 

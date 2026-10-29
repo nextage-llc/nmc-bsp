@@ -14,3 +14,8 @@ define NMC_UBOOT_INSTALL_DTS
 	cp $(NMC_BSP_DIR)/uboot/mpfs-nmc-uboot.dts $(UBOOT_DIR)/dts/upstream/src/riscv/microchip/mpfs-icicle-kit.dts
 endef
 UBOOT_PRE_BUILD_HOOKS += NMC_UBOOT_INSTALL_DTS
+
+# `make legal-info`: check the kernel license files against linux-licenses.hash
+# instead of Buildroot's linux.hash (see that file).
+LINUX_HASH_FILES = $(BR2_EXTERNAL_NMC_PATH)/linux-licenses.hash
+LINUX_HEADERS_HASH_FILES = $(BR2_EXTERNAL_NMC_PATH)/linux-licenses.hash

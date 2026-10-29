@@ -35,7 +35,7 @@ nmc-bsp/
 ├── hart-software-services/   # HSS bootloader source (Microchip HSS + NMC2v3 board, see UPSTREAM.md)
 ├── nmc-linux-bsp/            # Linux: Buildroot and Yocto
 ├── nmc-rtems-bsp/            # RTEMS: device tree and payload configuration
-└── docs/                     # Bring-up guides (PDF)
+└── docs/                     # Bring-up guide (PDF)
 ```
 
 ## Rebuild the HSS

@@ -8,7 +8,7 @@ Build and boot **Linux** on the NMC2v3 with Buildroot. This folder is a Buildroo
 
 - **Program the board first** (FPGA design + HSS) — see the [FPGA README](../../fpga/README.md). The HSS provides the UART0 prompt used to flash the payload.
 - **Host:** WSL2 with Debian 13 (tested; Ubuntu 22.04/24.04 should also work, not tested for this release), Tera Term, and a TFTP server such as tftpd64.
-- **Connections:** USB-to-serial on UART0 and UART1, and an Ethernet cable from the board to the PC.
+- **Connections:** USB-to-serial on UART0 and UART1, and an Ethernet cable from the board's J19 (eth0) to the PC.
 
 ## Choose Your Path
 

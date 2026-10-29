@@ -25,7 +25,7 @@ First release of the NMC2v3 BSP (`nextage-llc/nmc-bsp`): FPGA reference design, 
   - `pcie0` disabled; the pre-built images run with PCIe off.
   - eMMC at 3.3 V High Speed DDR (52 MHz) in Linux and U-Boot (Linux previously chose HS200, which needs 1.8 V); QSPI flash at 50 MHz.
   - `/dev/spidev0.0` + `spi-tools`; named GPIO lines for the LEDs and SW2.
-  - **Buildroot:** one-command build (`make nmc_defconfig && make`) from an external tree — no copying configs into the build folder.
+  - **Buildroot:** one-command build (`make nmc_defconfig && make`) from an external tree — no copying configs into the build folder. `make legal-info` works with the 6.18 kernel (its updated license text is checked against `buildroot/linux-licenses.hash`).
   - **Yocto:** kernel and U-Boot built from the same NMC configs as Buildroot (previously Microchip's Icicle Kit kernel config, which lacked `ttyS4`–`ttyS6` and the Ethernet PHY driver); build template (no manual layer setup); `spi-tools`; `mmc rescan` in the flashing steps.
 - **Bring-up guide:** one guide (`docs/nmc-bring-up-guide.pdf`) for cabling, programming and loading Buildroot, Yocto or RTEMS, replacing the separate Buildroot and Yocto guides.
 - **RTEMS:** device tree corrected to match the board and the Linux device tree (interrupts, clocks, memory, aliases, CAN_0, fabric UARTs, user GPIO, eMMC, QSPI); sample rebuilt on RTEMS 6.1 with the NMC device tree built in (previously RTEMS's Icicle Kit device tree); build steps for the toolchain, BSP and payload; payload generator built from the HSS source.
@@ -41,8 +41,10 @@ Also in `SHA256SUMS` in the release downloads (`sha256sum -c SHA256SUMS`).
 | `nmc-buildroot-payload.bin` | `dcf625d0db9f150008bf41e1342582719fed829f8c8159f585256088c80e7456` |
 | `nmc-buildroot.img` | `8f54b509501a8796e44e1c473cb707fc8639e917d83afee9b32de0b00938364a` |
 | `nmc-yocto-payload.bin` | `212c3e0ef86725fa64ca60db71604631de65d96b5cb03d81231212a6614a2331` |
-| `nmc-yocto.wic.gz` | `37b47b527c35dcc9d52dcd2d37c80573328275ba9ba23162aea1320b24e65799` |
+| `nmc-yocto.wic.gz` | `10631c3d9dbbe3958ee148d469d99230fd8ceaa8cf3a7502262f757ee0287208` |
 | `nmc-rtems-payload.bin` | `1f3b8aa0a978ec58b94f6f9e5699b098e16d9e916e67c11790721563ebc22dc8` |
+| `nmc-buildroot-sources.tar` | `e2f8d21ca1e4e7ab451c6dc1aad08996cd34e9768a35af6cb8a9a1a6409f8a4d` |
+| `nmc-yocto-sources.tar` | `0726c7918fe2e36f1b50d3a0f71f644b9afff275cade4e9e3559198212ca0119` |
 
 ### Known issues
 
