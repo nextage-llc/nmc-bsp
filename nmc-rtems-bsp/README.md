@@ -154,4 +154,4 @@ Type `boot` (or power cycle the board). The RTEMS application output appears in 
 
 ## Additional Resources
 
-- [**Bring-Up Guide**](../docs/nmc2v3-bring-up-guide-buildroot.pdf) (PDF) — photo walkthrough: software installation, cabling and connector locations, and FPGA/eNVM programming. Its flashing steps target Linux, but the YMODEM payload procedure is the same for RTEMS.
+- [**Bring-Up Guide**](../docs/nmc-bring-up-guide.pdf) (PDF) — step-by-step walkthrough with photos: software installation, cabling and connector locations, programming the board, and loading RTEMS.

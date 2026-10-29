@@ -1,0 +1,440 @@
+# Microchip I/O Physical Design Constraints file
+
+# User I/O Constraints file 
+
+# Version: 2025.2 2025.2.0.14
+
+# Family: PolarFireSoC , Die: MPFS250T , Package: FCG1152
+
+# Date generated: Wed Jul 29 10:57:03 2026 
+
+
+# 
+# User Locked I/O Bank Settings
+# 
+
+set_iobank -bank_name Bank0  \
+    -vcci 1.80               \
+    -fixed true
+
+set_iobank -bank_name Bank1  \
+    -vcci 3.30               \
+    -fixed true
+
+set_iobank -bank_name Bank3  \
+    -vcci 3.30               \
+    -fixed true
+
+set_iobank -bank_name Bank7  \
+    -vcci 3.30               \
+    -fixed true
+
+set_iobank -bank_name Bank8  \
+    -vcci 1.80               \
+    -fixed true
+
+set_iobank -bank_name Bank9  \
+    -vcci 3.30               \
+    -fixed true
+
+
+# 
+# Unlocked I/O Bank Settings
+# The I/O Bank Settings can be locked by directly editing this file
+# or by making changes in the I/O Attribute Editor
+# 
+
+
+# 
+# User Locked I/O settings
+# 
+
+set_io -port_name CAN_0_RXBUS_F2M  \
+    -pin_name L10                  \
+    -fixed true                    \
+    -DIRECTION INPUT
+
+
+set_io -port_name CAN_0_TXBUS_M2F  \
+    -pin_name K10                  \
+    -fixed true                    \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name CAN_0_TX_EBL_M2F  \
+    -pin_name M11                   \
+    -fixed true                     \
+    -RES_PULL Down                  \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name FPGA_CLK  \
+    -pin_name T4            \
+    -fixed true             \
+    -DIRECTION INPUT
+
+set_io -port_name FPGA_CLK  \
+    -pin_name T4            \
+    -fixed true             \
+    -DIRECTION INPUT
+
+
+
+set_io -port_name J1_UART_TX -pin_name L17 -fixed true -io_std LVCMOS33 -DIRECTION OUTPUT
+set_io -port_name J1_UART_RX -pin_name L18 -fixed true -io_std LVCMOS33 -RES_PULL Up -DIRECTION INPUT
+set_io -port_name SW2_N      -pin_name C1  -fixed true -io_std LVCMOS33 -DIRECTION INPUT
+set_io -port_name LED_R      -pin_name H27 -fixed true -io_std LVCMOS33 -DIRECTION OUTPUT
+set_io -port_name LED_G      -pin_name J26 -fixed true -io_std LVCMOS33 -DIRECTION OUTPUT
+set_io -port_name LED_B      -pin_name J27 -fixed true -io_std LVCMOS33 -DIRECTION OUTPUT
+
+
+set_io -port_name PLL_CPU_LOCK_M2F  \
+    -pin_name AP20                  \
+    -fixed true                     \
+    -io_std LVCMOS18                \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name PLL_DDR_LOCK_M2F  \
+    -pin_name AP21                  \
+    -fixed true                     \
+    -io_std LVCMOS18                \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name VSC_NRESET  \
+    -pin_name T3              \
+    -fixed true               \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name VSC_SNRESET  \
+    -pin_name T2               \
+    -fixed true                \
+    -DIRECTION OUTPUT
+
+
+
+# 
+# Dedicated Peripheral I/O Settings
+# 
+
+
+# 
+# Unlocked I/O settings
+# The I/Os in this section are unplaced or placed but are not locked
+# the other listed attributes have been applied
+# 
+
+set_io -port_name FPGA_422_1_TX -pin_name R2  -fixed true -io_std LVCMOS33 -DIRECTION OUTPUT
+set_io -port_name FPGA_422_1_RX -pin_name P1  -fixed true -io_std LVCMOS33 -RES_PULL Up -DIRECTION INPUT
+set_io -port_name FPGA_422_2_TX -pin_name L15 -fixed true -io_std LVCMOS33 -DIRECTION OUTPUT
+set_io -port_name FPGA_422_2_RX -pin_name L14 -fixed true -io_std LVCMOS33 -RES_PULL Up -DIRECTION INPUT
+
+#
+#Ports using Dedicated Pins
+
+#
+
+set_io -port_name LANE0_RXD_N  \
+    -pin_name R31              \
+    -DIRECTION INPUT
+
+
+set_io -port_name LANE0_RXD_P  \
+    -pin_name R32              \
+    -DIRECTION INPUT
+
+
+set_io -port_name LANE0_TXD_N  \
+    -pin_name T33              \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name LANE0_TXD_P  \
+    -pin_name T34              \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name LANE1_RXD_N  \
+    -pin_name T29              \
+    -DIRECTION INPUT
+
+
+set_io -port_name LANE1_RXD_P  \
+    -pin_name T30              \
+    -DIRECTION INPUT
+
+
+set_io -port_name LANE1_TXD_N  \
+    -pin_name U31              \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name LANE1_TXD_P  \
+    -pin_name U32              \
+    -DIRECTION OUTPUT
+
+
+#set_io -port_name LANE2_RXD_N  \
+    -pin_name V29              \
+    -DIRECTION INPUT
+
+
+#set_io -port_name LANE2_RXD_P  \
+    -pin_name V30              \
+    -DIRECTION INPUT
+
+
+#set_io -port_name LANE2_TXD_N  \
+    -pin_name V33              \
+    -DIRECTION OUTPUT
+
+
+#set_io -port_name LANE2_TXD_P  \
+    -pin_name V34              \
+    -DIRECTION OUTPUT
+
+
+#set_io -port_name LANE3_RXD_N  \
+    -pin_name W31              \
+    -DIRECTION INPUT
+
+
+#set_io -port_name LANE3_RXD_P  \
+    -pin_name W32              \
+    -DIRECTION INPUT
+
+
+#set_io -port_name LANE3_TXD_N  \
+    -pin_name Y33              \
+    -DIRECTION OUTPUT
+
+
+#set_io -port_name LANE3_TXD_P  \
+    -pin_name Y34              \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name REF_CLK_PAD_N  \
+    -pin_name U28                \
+    -DIRECTION INPUT
+
+set_io -port_name REF_CLK_PAD_P  \
+    -pin_name U27                \
+    -DIRECTION INPUT
+
+set_io -port_name PCIE_0_PERST_OUT_N  \
+    -pin_name N11                \
+    -DIRECTION OUTPUT
+    
+# SSD Specific I/O's
+
+set_io -port_name SSD_XIN  \
+    -pin_name AJ10         \
+    -fixed true            \
+    -io_std LVCMOS18       \
+    -DIRECTION OUTPUT
+
+set_io -port_name SSD_QE_N  \
+    -pin_name L9            \
+    -fixed true             \
+    -io_std LVCMOS33        \
+    -DIRECTION OUTPUT
+
+set_io -port_name SSD_WP_N  \
+    -pin_name L8            \
+    -fixed true             \
+    -io_std LVCMOS33        \
+    -DIRECTION OUTPUT
+
+set_io -port_name SSD_DF_N  \
+    -pin_name M10           \
+    -fixed true             \
+    -io_std LVCMOS33        \
+    -DIRECTION OUTPUT
+
+set_io -port_name SSD_SW_RST_N  \
+    -pin_name M14               \
+    -fixed true                 \
+    -io_std LVCMOS33            \
+    -DIRECTION OUTPUT
+    
+# Stacking Connector SERDES (XCVR_1)
+
+set_io -port_name SERDES_XCVR_1_RX0_N  \
+    -pin_name K29                      \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_1_RX0_P  \
+    -pin_name K30                      \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_1_RX1_N  \
+    -pin_name L31                     \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_1_RX1_P  \
+    -pin_name L32                     \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_1_RX2_N  \
+    -pin_name M29                     \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_1_RX2_P  \
+    -pin_name M30                     \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_1_RX3_N  \
+    -pin_name P29                     \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_1_RX3_P  \
+    -pin_name P30                     \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_1_TX0_N  \
+    -pin_name K33                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_1_TX0_P  \
+    -pin_name K34                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_1_TX1_N  \
+    -pin_name M33                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_1_TX1_P  \
+    -pin_name M34                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_1_TX2_N  \
+    -pin_name N31                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_1_TX2_P  \
+    -pin_name N32                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_1_TX3_N  \
+    -pin_name P33                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_1_TX3_P  \
+    -pin_name P34                     \
+    -DIRECTION OUTPUT
+    
+set_io -port_name REF_CLK_PAD_N_1  \
+    -pin_name L28                 \
+    -DIRECTION INPUT
+    
+set_io -port_name REF_CLK_PAD_P_1  \
+    -pin_name L27                 \
+    -DIRECTION INPUT
+    
+
+# Connector SERDES (XCVR_2)
+
+set_io -port_name SERDES_XCVR_2_RX0_N  \
+    -pin_name Y29                      \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_2_RX0_P  \
+    -pin_name Y30                      \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_2_RX1_N  \
+    -pin_name AB29                     \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_2_RX1_P  \
+    -pin_name AB30                     \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_2_RX2_N  \
+    -pin_name AC31                     \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_2_RX2_P  \
+    -pin_name AC32                     \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_2_RX3_N  \
+    -pin_name AD29                     \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_2_RX3_P  \
+    -pin_name AD30                     \
+    -DIRECTION INPUT
+
+
+set_io -port_name SERDES_XCVR_2_TX0_N  \
+    -pin_name AA31                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_2_TX0_P  \
+    -pin_name AA32                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_2_TX1_N  \
+    -pin_name AB33                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_2_TX1_P  \
+    -pin_name AB34                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_2_TX2_N  \
+    -pin_name AD33                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_2_TX2_P  \
+    -pin_name AD34                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_2_TX3_N  \
+    -pin_name AE31                     \
+    -DIRECTION OUTPUT
+
+
+set_io -port_name SERDES_XCVR_2_TX3_P  \
+    -pin_name AE32                     \
+    -DIRECTION OUTPUT
+
+set_io -port_name REF_CLK_PAD_P_2  \
+    -pin_name AC27                 \
+    -DIRECTION INPUT
+
+set_io -port_name REF_CLK_PAD_N_2  \
+    -pin_name AC28                 \
+    -DIRECTION INPUT

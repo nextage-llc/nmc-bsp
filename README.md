@@ -60,4 +60,4 @@ The HSS payload generator (`hart-software-services/tools/hss-payload-generator`)
 
 ## Additional Resources
 
-- [**Bring-Up Guide (Buildroot)**](./docs/nmc2v3-bring-up-guide-buildroot.pdf) and [**Bring-Up Guide (Yocto)**](./docs/nmc2v3-bring-up-guide-yocto.pdf) (PDF) — photo walkthroughs: software installation, cabling and connector locations, FPGA/eNVM programming, and flashing.
+- [**Bring-Up Guide**](./docs/nmc-bring-up-guide.pdf) (PDF) — step-by-step walkthrough with photos: software installation, cabling and connector locations, programming the board, and loading Buildroot, Yocto or RTEMS.

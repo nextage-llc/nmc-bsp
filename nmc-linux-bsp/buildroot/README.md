@@ -106,7 +106,7 @@ Connect the board's USB cable to the PC and open two Tera Term windows at **1152
 
 ### Step 7: Flash `nmc-buildroot.img` to eMMC (TFTP, UART1)
 
-1. Connect the board's J19 Ethernet port (eth0 end of the cable) to the PC. Start a TFTP server (e.g. **tftpd64**) on that interface, pointed at the folder containing `nmc-buildroot.img` (e.g. `C:\nmc-images`).
+1. Connect the board's J19 Ethernet port (eth0 end of the cable) to the PC. Start a TFTP server (e.g. **tftpd64**) on that interface, pointed at the folder containing `nmc-buildroot.img` (e.g. `C:\nmc-images`). Note the interface's IP address; set it manually on the host adapter if needed.
 2. In Window 2, set `serverip` to the PC's Ethernet address and `ipaddr` to an unused address on the same subnet:
 
    ```text
@@ -155,4 +155,4 @@ The WSL2 clock has drifted from Windows, which can make `make` skip or repeat st
 
 ## Additional Resources
 
-- [**Bring-Up Guide (Buildroot)**](../../docs/nmc2v3-bring-up-guide-buildroot.pdf) (PDF) — photo walkthrough: software installation, cabling and connector locations, FPGA/eNVM programming, and flashing.
+- [**Bring-Up Guide**](../../docs/nmc-bring-up-guide.pdf) (PDF) — step-by-step walkthrough with photos: software installation, cabling and connector locations, programming the board, and flashing.

@@ -218,4 +218,4 @@ The uncompressed `.wic` does not fit in U-Boot's RAM at the load address. Send `
 
 ## Additional Resources
 
-- [**Bring-Up Guide (Yocto)**](../../docs/nmc2v3-bring-up-guide-yocto.pdf) (PDF) — photo walkthrough: software installation, cabling and connector locations, FPGA/eNVM programming, and flashing.
+- [**Bring-Up Guide**](../../docs/nmc-bring-up-guide.pdf) (PDF) — step-by-step walkthrough with photos: software installation, cabling and connector locations, programming the board, and flashing.
