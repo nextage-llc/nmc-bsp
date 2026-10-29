@@ -32,7 +32,7 @@ I2C1 has **no pull-ups on the NMC** — the daughterboard must provide them.
 | Linux | Interface | Where |
 | ----- | --------- | ----- |
 | `end0`, `end1` | Ethernet ×2 (VSC8662 PHYs) | J19 → 2× RJ45 (U-Boot can only use `eth0`) |
-| `/dev/mmcblk0` | eMMC (4-bit, 3.3 V, HS DDR) | on board |
+| `/dev/mmcblk0` | eMMC (4-bit, 3.3 V, High Speed 52 MHz) | on board |
 | `/dev/mtd0` | QSPI NOR flash (128 MiB) | on board |
 | — | PCIe root port x2 + SSD | on board, disabled by default (`pcie0` in the Linux device tree) |
 

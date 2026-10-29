@@ -17,7 +17,7 @@ Both build systems produce an HSS-wrapped U-Boot **payload** (flashed over YMODE
 | Upstream base | Buildroot 2025.02.11 + `buildroot-external-microchip` | `meta-mchp` `linux4microchip-2026.04` (scarthgap) |
 | Build | `make nmc_defconfig && make` | `bitbake mchp-base-image` |
 | Payload / eMMC disk image | `nmc-buildroot-payload.bin` / `nmc-buildroot.img` (`mpfs_icicle.itb` on partition 2) | `nmc-yocto-payload.bin` / `nmc-yocto.wic.gz` (`fitImage` + `boot.scr` on partition 1) |
-| Login | `root` / `root` | `root` / no password |
+| Login | `root` / `root` | `root` / no password (set a new one at first login) |
 | First build | ~1 hour | 1–2 hours, ~100 GB disk |
 
 > Flash the payload and disk image from the same build system — the two U-Boots look for the kernel in different places.

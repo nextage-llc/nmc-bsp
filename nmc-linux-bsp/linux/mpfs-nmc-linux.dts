@@ -189,7 +189,8 @@
 &mmuart4 { status = "okay"; };
 
 /* eMMC (U2): VCC and VCCQ are both +3V3, so I/O is 3.3 V only.
- * Fastest in-spec mode at 3.3 V is High-Speed DDR (52 MHz); HS200 needs 1.8 V I/O.
+ * High-Speed SDR (52 MHz). High-Speed DDR (mmc-ddr-3_3v) gave read errors at boot
+ * on some boards in Linux (U-Boot and the HSS read fine in DDR); HS200 needs 1.8 V I/O.
  * no-1-8-v: the controller advertises 1.8 V modes in its capability register and
  * Linux would otherwise pick HS200 on its own. */
 &mmc {
@@ -197,7 +198,6 @@
 	disable-wp;
 	no-1-8-v;
 	cap-mmc-highspeed;
-	mmc-ddr-3_3v;
 	status = "okay";
 };
 

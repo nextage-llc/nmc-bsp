@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026.10.1
+
+Fixes found testing 2026.10 on a second board. FPGA, HSS and RTEMS files are unchanged; only the Linux images are rebuilt.
+
+- **Linux:** eMMC at High Speed SDR (52 MHz) instead of High Speed DDR: with DDR, Linux got read errors at boot on some boards and could not mount the root filesystem. U-Boot and the HSS keep DDR (they read fine).
+- **Linux:** hostname `nmc` in both Buildroot and Yocto (was `buildroot` / `mpfs-icicle-kit`).
+- **Docs:** Yocto asks you to set a root password at the first login.
+
+Changed downloads (all other files are the same as in 2026.10; every checksum is in `SHA256SUMS`):
+
+| File | SHA-256 |
+| ---- | ------- |
+| `nmc-buildroot.img` | `d305e6fbd6faaef4f47490df3fc4249db4f8b3589d70a302fd7494aed005ce3e` |
+| `nmc-yocto.wic.gz` | `9b908e7fffe6d1386453cdefea727406257239e88eb2eaafb21ec14dac738df7` |
+
 ## 2026.10
 
 First release of the NMC2v3 BSP (`nextage-llc/nmc-bsp`): FPGA reference design, HSS, Linux (Buildroot and Yocto) and RTEMS in one repository.

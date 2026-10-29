@@ -14,6 +14,8 @@ meta-nmc/
 ├── conf/templates/nmc/                     # Build template: Microchip's layers + meta-nmc (Step 3)
 ├── recipes-mchp/images/
 │   └── mchp-base-image.bbappend            # Adds spi-tools (same as Buildroot)
+├── recipes-core/base-files/
+│   └── base-files_%.bbappend               # Hostname nmc (same as Buildroot)
 ├── recipes-kernel/linux/
 │   └── linux-mchp_%.bbappend               # ../linux/mpfs-nmc-linux.dts + nmc_defconfig
 └── recipes-bsp/u-boot/
@@ -187,7 +189,7 @@ fatload mmc 0:1 0x84000000 fitImage
 bootm 0x84000000
 ```
 
-Login: `root`, no password.
+Login: `root`, no password; you are asked to set a new password at the first login.
 
 ---
 
