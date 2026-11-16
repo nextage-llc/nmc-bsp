@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- **HSS:** build scripts are marked executable (`carray.sh`, `d2c.sh`, Kconfiglib, `tools/`), so the HSS builds on Linux from a fresh clone.
+- **Docs:** `docs/nmc-bring-up-guide.pdf` now has photos and screenshots for every step; Step 5B lists the TFTP steps in full; the `serverip`/`ipaddr` example values are corrected.
+
 ## 2026.10.1
 
 Fixes found testing 2026.10 on a second board. FPGA, HSS and RTEMS files are unchanged; only the Linux images are rebuilt.
